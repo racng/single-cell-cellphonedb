@@ -8,8 +8,8 @@
 !envs/
 !envs/*
 !.gitignore
-LICENSE
-README.md
-Snakefile
-config.yaml
+!LICENSE
+!README.md
+!Snakefile
+!config.yaml
 
