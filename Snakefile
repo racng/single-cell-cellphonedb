@@ -6,10 +6,12 @@
 #report: "report/workflow.rst"
 
 # include: "rules/init.smk"
+
 workdir: config['workdir']
 include: "rules/cellphonedb.smk"    
 
 rule all:
     input:
-        expand("cellphonedb/{sample}/means.txt", sample=config['sample']['groups'])
+        "finished.txt"
+        # expand("cellphonedb/{sample}/means.txt", sample=config['sample']['groups'])
         

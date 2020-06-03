@@ -1,3 +1,13 @@
+checkpoint samples:
+    input: 
+        adata=config['adata']
+    output:
+        directory("samples")
+    conda:
+        "../envs/scanpy.yaml"
+    script:
+        "../scripts/read_adata.py"
+
 rule prep_counts:
     input:
         adata=config['adata']
@@ -37,4 +47,13 @@ rule run_cellphoendb:
         "--threshold={params.threshold} &> {log}"
         
 
-        
+def aggregate_results(wildcards):
+    checkpoint_output = checkpoints.samples.get(**wildcards).output[0]
+    return expand("cellphonedb/{sample}/means.txt", 
+        sample=glob_wildcards(os.path.join(checkpoint_output, "{sample}.txt")).sample)
+
+rule aggregate:
+    input:
+        aggregate_results
+    output:
+        touch("finished.txt")
