@@ -1,0 +1,6 @@
+name: cellphonedb
+dependencies:
+ - pandas>=0.23,<0.23.99
+ - pip
+ - pip:
+    - cellphonedb

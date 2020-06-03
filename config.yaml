@@ -1,5 +1,23 @@
-# This file should contain everything to configure the workflow on a global scale.
-# In case of sample based data, it should be complemented by a samples.tsv file that contains
-# one row per sample. It can be parsed easily via pandas.
-adata: 'data.h5ad'
-phenotype: 'cell'
+# configuration of workflow
+workdir: 'output/'
+adata: 'data/adata.h5ad'
+
+# key and groups to use for catagorical variables 
+# put empty list [] if selecting all groups 
+gene:
+  key: 'ensg'
+
+phenotype: 
+  key: 'cell_groups'
+  groups: ['Tcell', 'Monocytes', 'DC']
+
+# if single sample, set key=''
+sample:
+  key: 'patient'
+  groups: []
+
+cellphonedb:
+  args:
+    iterations: 1000
+    threshold: 0.1
+    threads: 4

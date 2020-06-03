@@ -2,17 +2,14 @@
 # After configuring, running snakemake -n in a clone of this repository should successfully execute a dry-run of the workflow.
 
 
-configfile: "config.yaml"
-report: "report/workflow.rst"
+#configfile: "config.yaml"
+#report: "report/workflow.rst"
 
-# Allow users to fix the underlying OS via singularity.
-singularity: "docker://continuumio/miniconda3"
-
+# include: "rules/init.smk"
+workdir: config['workdir']
+include: "rules/cellphonedb.smk"    
 
 rule all:
     input:
-        # The first rule should define the default target files
-        # Subsequent target rules can be specified below. They should start with all_*.
-
-
-include: "rules/other.smk"
+        expand("cellphonedb/{sample}/means.txt", sample=config['sample']['groups'])
+        

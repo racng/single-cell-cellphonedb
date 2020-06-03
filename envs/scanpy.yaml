@@ -1,0 +1,19 @@
+name: scanpy
+channels:
+ - conda-forge
+ - bioconda
+dependencies:
+ - python>=3.6
+ - cmake
+ - pandas
+ - numpy
+ - scipy
+ - seaborn
+ - scikit-learn
+ - statsmodels
+ - numba
+ - pytables
+ - python-igraph
+ - leidenalg
+ - h5py
+ - scanpy
