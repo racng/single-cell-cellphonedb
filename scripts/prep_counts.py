@@ -36,8 +36,11 @@ def write_counts(
     df_expr_matrix = pd.DataFrame(adata.X.T.toarray())
     # set cell IDs as columns
     df_expr_matrix.columns = adata.obs.index
-    # set EnsembleIDs or gene names as index
-    df_expr_matrix.set_index(adata.var[gene_key], inplace=True)
+    # set adata var index or a var column (ex. EnsembleIDs, gene names) as index
+    if gene_key=='index':
+        df_expr_matrix.set_index(adata.var_names, inplace=True)
+    else:
+        df_expr_matrix.set_index(adata.var[gene_key], inplace=True)
     # write count matrix
     df_expr_matrix.to_csv(path, sep='\t')
 
@@ -51,7 +54,7 @@ def write_meta(
         'Cell': list(adata.obs.index), 
         'cell_type': list(adata.obs[celltype_key])
         })
-    df_meta.to_csv(path, sep='\t')
+    df_meta.to_csv(path, sep='\t', index=False)
     
 
 

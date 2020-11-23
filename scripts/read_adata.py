@@ -4,7 +4,8 @@ import os
 # read adata
 adata = sc.read(snakemake.input['adata'])
 # get all available samples in samples key
-samples_cat = adata.obs[snakemake.config['sample']['key']].astype('category').cat.categories
+samples_cat = adata.obs[snakemake.config['sample']['key']].unique()
+
 # use all samples if none specified
 if snakemake.config['sample']['groups']==[]:
     samples = samples_cat
@@ -16,8 +17,9 @@ else:
         raise ValueError("Samples not found: ", missing)
 
 # write samples
-if not os.path.isdir("samples"):
-    os.system("mkdir samples")
+path = f"{snakemake.config['outdir']}/samples"
+if not os.path.isdir(path):
+    os.system("mkdir -p " + path)
 for sample in samples:
-    with open("samples/{}.txt".format(sample), "w") as f:
+    with open("{}/{}.txt".format(path, sample), "w") as f:
         f.write(sample)

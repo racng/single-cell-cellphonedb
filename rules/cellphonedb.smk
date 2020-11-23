@@ -2,7 +2,7 @@ checkpoint samples:
     input: 
         adata=config['adata']
     output:
-        directory("samples")
+        directory("{outdir}/samples")
     conda:
         "../envs/scanpy.yaml"
     script:
@@ -12,8 +12,8 @@ rule prep_counts:
     input:
         adata=config['adata']
     output:
-        counts=temp("cellphonedb/{sample}/counts.txt"),
-        meta=temp("cellphonedb/{sample}/meta.txt")
+        counts=temp("{outdir}/cellphonedb/{sample}/counts.txt"),
+        meta=temp("{outdir}/cellphonedb/{sample}/meta.txt")
         # counts="cellphonedb/{sample}/counts.txt",
         # meta="cellphonedb/{sample}/meta.txt"
     conda:
@@ -23,17 +23,18 @@ rule prep_counts:
 
 rule run_cellphoendb:
     input:
-        counts='cellphonedb/{sample}/counts.txt',
-        meta='cellphonedb/{sample}/meta.txt'
+        counts='{outdir}/cellphonedb/{sample}/counts.txt',
+        meta='{outdir}/cellphonedb/{sample}/meta.txt'
     output:
-        "cellphonedb/{sample}/deconvoluted.txt",
-        "cellphonedb/{sample}/pvalues.txt",
-        "cellphonedb/{sample}/means.txt",
-        "cellphonedb/{sample}/significant_means.txt",
+        "{outdir}/cellphonedb/{sample}/deconvoluted.txt",
+        "{outdir}/cellphonedb/{sample}/pvalues.txt",
+        "{outdir}/cellphonedb/{sample}/means.txt",
+        "{outdir}/cellphonedb/{sample}/significant_means.txt",
     log:
-        "cellphonedb/{sample}/cellphonedb.statistical_analysis.log"
+        "{outdir}/cellphonedb/{sample}/cellphonedb.statistical_analysis.log"
     params:
-        outdir="cellphonedb/{sample}",
+        outdir="{outdir}/cellphonedb/{sample}",
+        gene_id_type=config['cellphonedb']['args']['counts-data'],
         iterations=config['cellphonedb']['args']['iterations'],
         threshold=config['cellphonedb']['args']['threshold']
     threads: config['cellphonedb']['args']['threads']
@@ -41,6 +42,7 @@ rule run_cellphoendb:
         "../envs/cellphonedb.yaml"
     shell:
         "cellphonedb method statistical_analysis {input.meta} {input.counts} "
+        "--counts-data {params.gene_id_type} "
         "--output-path {params.outdir} "
         "--threads={threads} "
         "--iterations={params.iterations} "
@@ -49,11 +51,12 @@ rule run_cellphoendb:
 
 def aggregate_results(wildcards):
     checkpoint_output = checkpoints.samples.get(**wildcards).output[0]
-    return expand("cellphonedb/{sample}/means.txt", 
+    return expand("{outdir}/cellphonedb/{sample}/means.txt", 
+        outdir=config['outdir'],
         sample=glob_wildcards(os.path.join(checkpoint_output, "{sample}.txt")).sample)
 
 rule aggregate:
     input:
         aggregate_results
     output:
-        touch("finished.txt")
+        touch("{outdir}/finished.txt")

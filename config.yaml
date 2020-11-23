@@ -1,23 +1,28 @@
 # configuration of workflow
-workdir: 'output/'
+outdir: 'output'
 adata: 'data/adata.h5ad'
 
-# key and groups to use for catagorical variables 
-# put empty list [] if selecting all groups 
 gene:
-  key: 'ensg'
+  # key in adata.var to use for gene names
+  # If key is 'index', use adata.var.index
+  key: 'index'
 
-phenotype: 
-  key: 'cell_groups'
-  groups: ['Tcell', 'Monocytes', 'DC']
-
-# if single sample, set key=''
-sample:
-  key: 'patient'
+# key and groups to use for labeling cell type
+# put empty list [] if selecting all cell types 
+celltype: 
+  key: 'Cell Types'
   groups: []
+
+# key and groups to use for grouping cells by sample 
+# put empty list [] if selecting all samples 
+sample:
+  key: 'Blood Draw Sample'
+  groups: ['1-1', '2-1']
 
 cellphonedb:
   args:
-    iterations: 1000
+    # Type of gene identifiers in the counts data {ensembl, gene_name, hgnc_symbol}
+    counts-data: 'gene_name'
+    iterations: 10
     threshold: 0.1
-    threads: 4
+    threads: 6 # overuled by --cores argument
